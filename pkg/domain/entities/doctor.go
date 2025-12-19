@@ -1,34 +1,38 @@
 package entities
 
-import (
-	"time"
-)
+import "time"
 
 type Doctor struct {
-	DoctorID      int
-	FirstName     string
-	LastName      string
-	Email         string
-	Phone         string
-	LicenseNumber string
+	DoctorID       int
+	FirstName      string
+	LastName       string
+	Email          string
+	Phone          string
+	LicenseNumber  string
 	Specialization string
-	Department    string
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
+	Department     string
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
 }
 
 func (d *Doctor) Validate() error {
 	if d.FirstName == "" || d.LastName == "" {
-		return ErrInvalidInput("first name and last name required")
+		return ErrInvalidInput("first and last name required")
 	}
 	if !isValidEmail(d.Email) {
 		return ErrInvalidInput("invalid email format")
+	}
+	if !isValidPhone(d.Phone) {
+		return ErrInvalidInput("invalid phone format")
 	}
 	if d.LicenseNumber == "" {
 		return ErrInvalidInput("license number required")
 	}
 	if d.Specialization == "" {
 		return ErrInvalidInput("specialization required")
+	}
+	if d.Department == "" {
+		return ErrInvalidInput("department required")
 	}
 	return nil
 }
@@ -38,5 +42,5 @@ func (d *Doctor) FullName() string {
 }
 
 func (d *Doctor) GetTitle() string {
-	return "Dr. " + d.FullName() + " (" + d.Specialization + ")"
+	return "Dr. " + d.FullName()
 }

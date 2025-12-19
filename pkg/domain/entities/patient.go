@@ -23,7 +23,10 @@ type Patient struct {
 
 func (p *Patient) Validate() error {
 	if p.FirstName == "" || p.LastName == "" {
-		return ErrInvalidInput("first name and last name required")
+		return ErrInvalidInput("first and last name required")
+	}
+	if p.DateOfBirth.IsZero() {
+		return ErrInvalidInput("date of birth required")
 	}
 	if !isValidEmail(p.Email) {
 		return ErrInvalidInput("invalid email format")
@@ -37,6 +40,10 @@ func (p *Patient) Validate() error {
 	return nil
 }
 
+func (p *Patient) FullName() string {
+	return p.FirstName + " " + p.LastName
+}
+
 func (p *Patient) GetAge() int {
 	return int(time.Since(p.DateOfBirth).Hours() / 24 / 365)
 }
@@ -45,16 +52,19 @@ func (p *Patient) IsAdult() bool {
 	return p.GetAge() >= 18
 }
 
-func (p *Patient) FullName() string {
-	return p.FirstName + " " + p.LastName
-}
-
 func isValidEmail(email string) bool {
-	pattern := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
-	match, _ := regexp.MatchString(pattern, email)
+	const emailPattern = `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
+	match, _ := regexp.MatchString(emailPattern, email)
 	return match
 }
 
 func isValidPhone(phone string) bool {
-	return len(phone) >= 10
+	// Simple validation: at least 10 digits
+	digits := 0
+	for _, ch := range phone {
+		if ch >= '0' && ch <= '9' {
+			digits++
+		}
+	}
+	return digits >= 10
 }

@@ -9,22 +9,31 @@ type MedicalTest struct {
 	PatientID     int
 	TestCatalogID int
 	TestDate      time.Time
-	ResultValue   string
-	NormalRange   string
-	Findings      string
+	ResultValue   string // For quantitative results
+	NormalRange   string // Reference range
+	Findings      string // Description of findings
 	ResultStatus  string // normal, abnormal, critical
-	ImageURL      string
-	InterpretedBy int // DoctorID
+	ImageURL      string // URL to imaging files if any
+	InterpretedBy *int   // DoctorID (nullable - may not be interpreted yet)
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 }
 
 func (mt *MedicalTest) Validate() error {
-	if mt.PatientID == 0 || mt.TestCatalogID == 0 {
-		return ErrInvalidInput("patient and test catalog required")
+	if mt.PatientID == 0 {
+		return ErrInvalidInput("patient ID required")
+	}
+	if mt.TestCatalogID == 0 {
+		return ErrInvalidInput("test catalog ID required")
 	}
 	if mt.TestDate.IsZero() {
 		return ErrInvalidInput("test date required")
+	}
+	if mt.ResultStatus == "" {
+		return ErrInvalidInput("result status required")
+	}
+	if mt.ResultStatus != "normal" && mt.ResultStatus != "abnormal" && mt.ResultStatus != "critical" {
+		return ErrInvalidInput("invalid result status: must be normal, abnormal, or critical")
 	}
 	return nil
 }
@@ -39,4 +48,8 @@ func (mt *MedicalTest) IsCritical() bool {
 
 func (mt *MedicalTest) IsNormal() bool {
 	return mt.ResultStatus == "normal"
+}
+
+func (mt *MedicalTest) NeedsInterpretation() bool {
+	return mt.InterpretedBy == nil
 }
