@@ -1,0 +1,10 @@
+﻿1,Alzheimers Disease,Neurodegenerative Disorders,G30,Neurodegenerative disease leading to memory loss and cognitive decline
+2,Parkinsons Disease,Movement Disorders,G20,Progressive movement disorder characterized by tremor and rigidity
+3,Epilepsy,Seizure Disorders,G40,Neurological disorder characterized by seizures and loss of consciousness
+4,Multiple Sclerosis,Neurodegenerative Disorders,G35,Autoimmune neurodegenerative disease affecting the nervous system
+5,Migraine,Neurological Headaches,G43,Severe recurring headache disorder often with neurological symptoms
+6,Febrile Seizure,Seizure Disorders,R56,Convulsions triggered by high fever in children
+7,Diabetic Neuropathy,Peripheral Nerve Diseases,G63,Nerve damage caused by diabetes affecting peripheral nerves
+8,Stroke,Cerebrovascular Diseases,I63,Blockage of blood vessels in the brain
+9,Hemophilia,Bleeding Disorders,D66,Blood clotting disorder resulting in excessive bleeding
+10,Head Trauma,Head Injuries,S06,Injury to brain tissue from head trauma

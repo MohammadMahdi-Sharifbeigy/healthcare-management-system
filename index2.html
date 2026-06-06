@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل مدیریت بیمارستان | نسخه حرفه‌ای</title>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #4f46e5;      
+            --primary-hover: #4338ca;
+            --secondary: #10b981;    
+            --danger: #ef4444;       
+            --warning: #f59e0b;      
+            
+            --bg-body: #f3f4f6;
+            --bg-sidebar: #ffffff;
+            --bg-card: #ffffff;
+            --bg-input: #f9fafb;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --sidebar-width: 280px;
+        }
+
+        .dark-mode {
+            --bg-body: #111827;     
+            --bg-card: #1f2937;
+            --bg-input: #374151;
+            --text-main: #f9fafb;     
+            --text-muted: #9ca3af;    
+            --border-color: #374151;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+        }
+
+        * { box-sizing: border-box; outline: none; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
+        
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--bg-sidebar);
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid var(--border-color);
+            box-shadow: var(--shadow-md);
+            z-index: 10;
+        }
+
+        .logo {
+            padding: 2rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--primary);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .logo i { font-size: 1.8rem; }
+        .logo h2 { margin: 0; font-size: 1.2rem; font-weight: 800; letter-spacing: -0.5px; }
+
+        .nav-links {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem 1rem;
+            list-style: none;
+            margin: 0;
+        }
+
+        .nav-category {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 1.5rem 0 0.5rem 0.5rem;
+            font-weight: 700;
+        }
+        .nav-category:first-child { margin-top: 0; }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            margin-bottom: 4px;
+            border-radius: 12px;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            background-color: var(--bg-input);
+            color: var(--primary);
+            transform: translateX(-3px);
+        }
+
+        .nav-item.active {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header {
+            background-color: var(--bg-card);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-title h1 { margin: 0; font-size: 1.4rem; color: var(--text-main); }
+        .header-meta { display: flex; align-items: center; gap: 20px; }
+        
+        .theme-toggle {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: 0.3s;
+        }
+        .theme-toggle:hover { background: var(--border-color); }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .page {
+            display: none;
+            height: 100%;
+            overflow-y: auto;
+            padding: 2rem;
+            animation: slideUp 0.4s ease-out;
+        }
+        .page.active { display: block; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 2px;
+        }
+        
+        .tab-btn {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            position: relative;
+            font-family: inherit;
+        }
+        
+        .tab-btn::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--primary);
+            transform: scaleX(0);
+            transition: 0.3s;
+            border-radius: 3px 3px 0 0;
+        }
+
+        .tab-btn.active { color: var(--primary); }
+        .tab-btn.active::after { transform: scaleX(1); }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .form-group { margin-bottom: 0.5rem; }
+        .col-full { grid-column: 1 / -1; }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+            background-color: var(--bg-card);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            color: white;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(79, 70, 229, 0.4); }
+        .btn-primary:active { transform: translateY(0); }
+
+        .btn-success { background: var(--secondary); color: white; }
+        .btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+        .btn-danger:hover { background: rgba(239, 68, 68, 0.2); }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            background-color: var(--bg-card);
+        }
+
+        thead { background-color: var(--bg-input); }
+        
+        th {
+            padding: 16px;
+            text-align: right;
+            font-weight: 700;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-main);
+            vertical-align: middle;
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background-color: var(--bg-input); }
+
+        .badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+        .bg-red { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+        .bg-green { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+        .bg-blue { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+        .bg-orange { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            display: none;
+            font-weight: 500;
+            border-right: 4px solid;
+        }
+        .alert-success { background: rgba(16, 185, 129, 0.1); color: var(--secondary); border-color: var(--secondary); }
+        .alert-error { background: rgba(239, 68, 68, 0.1); color: var(--danger); border-color: var(--danger); }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
+        }
+        .empty-state i { font-size: 3rem; margin-bottom: 1rem; opacity: 0.5; }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+        .med-row {
+            display: flex;
+            gap: 10px;
+            background: var(--bg-input);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+            align-items: flex-end;
+            animation: fadeIn 0.3s;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .chart-container {
+            position: relative; 
+            height: 300px; 
+            width: 100%; 
+            margin-bottom: 20px;
+        }
+
+    @media print {
+        @page { 
+            size: A5 portrait; 
+            margin: 0; 
+        }
+        
+        body { 
+            margin: 0; 
+            padding: 10mm; 
+            background: white;
+            height: 100vh; 
+            box-sizing: border-box;
+        }
+        
+        .hide-in-print { display: none !important; }
+
+        .sidebar, .header, .tabs, .btn, .search-box, .alert, .control-panel, #dashboard, #management, #presc-new, #chart-card, #report-selector, label[for], .hide-in-print { 
+            display: none !important; 
+        }
+
+        .main-content { margin: 0; padding: 0; height: 100%; width: 100%; }
+        .page { display: block !important; padding: 0; height: 100%; }
+        .card { border: none; box-shadow: none; padding: 0; margin: 0; height: 100%; }
+        
+        #presc-edit { display: block !important; height: 100%; }
+
+        #edit-presc-container {
+            display: flex !important;
+            flex-direction: column;
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 0; 
+            height: calc(100vh - 20mm); 
+            box-sizing: border-box;
+            font-family: 'Vazirmatn', sans-serif;
+            color: black;
+            position: relative;
+        }
+
+        #edit-presc-container::before {
+            content: "نسخه پزشکی / Medical Prescription";
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 50px;
+            background-color: #eee;
+            border-bottom: 2px solid #333;
+            font-size: 1.2rem;
+            font-weight: 900;
+            border-radius: 6px 6px 0 0;
+            -webkit-print-color-adjust: exact; 
+        }
+
+        .form-grid { 
+            display: flex; 
+            flex-wrap: wrap;
+            padding: 15px;
+            gap: 15px;
+            border-bottom: 1px solid #333;
+            margin: 0 !important;
+        }
+        
+        .form-group { 
+            flex: 1 1 45%; 
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px !important;
+        }
+        
+        .form-group label { 
+            font-size: 0.8rem; 
+            color: #666; 
+            white-space: nowrap; 
+            margin-left: 10px;
+            min-width: 60px;
+        }
+        
+        .form-group input { 
+            border: none; 
+            border-bottom: 1px dotted #999; 
+            background: transparent !important; 
+            font-weight: bold; 
+            font-size: 0.95rem;
+            width: 100%;
+            padding: 2px 5px;
+            color: #000;
+            height: auto;
+        }
+
+        .med-table-wrapper {
+            flex-grow: 1; 
+            padding: 0;
+        }
+
+        .med-header-row {
+            display: flex !important;
+            background: #333 !important;
+            color: white !important;
+            padding: 8px 10px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            -webkit-print-color-adjust: exact;
+        }
+
+        #upd-med-list-container {
+            display: block !important;
+        }
+
+        .med-row { 
+            display: flex !important;
+            border: none; 
+            border-bottom: 1px dashed #ccc; 
+            padding: 8px 10px; 
+            background: white !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+            align-items: center;
+        }
+
+        .med-row input, .med-row select { 
+            border: none; 
+            background: transparent; 
+            font-size: 0.85rem;
+            color: black;
+            font-weight: 600;
+            padding: 0;
+            text-align: center;
+            height: auto;
+            box-shadow: none !important;
+        }
+        
+        .med-row .m-id, .med-row select { text-align: right; } 
+        .med-row button { display: none !important; } 
+        select { appearance: none; -webkit-appearance: none; border: none; }
+
+        .med-row > div:first-child, .med-header-row > div:nth-child(1) { flex: 2; text-align: right; }
+        .med-row > input:nth-child(2), .med-header-row > div:nth-child(2) { flex: 1; text-align: center; }
+        .med-row > input:nth-child(3), .med-header-row > div:nth-child(3) { flex: 1; text-align: center; }
+        .med-row > input:nth-child(4), .med-header-row > div:nth-child(4) { flex: 0.5; text-align: center; }
+        .med-row > input:nth-child(5), .med-header-row > div:nth-child(5) { flex: 2; text-align: left; }
+
+        .print-footer {
+            display: flex !important;
+            justify-content: space-between;
+            padding: 20px;
+            margin-top: auto; 
+            border-top: 1px solid #333;
+            background-color: #f9f9f9;
+            border-radius: 0 0 6px 6px;
+            -webkit-print-color-adjust: exact;
+        }
+        
+        .sign-box {
+            text-align: center;
+            width: 120px;
+            height: 60px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            position: relative;
+        }
+        
+        .sign-box span {
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            background: #f9f9f9;
+            padding: 0 5px;
+            font-size: 0.75rem;
+            color: #555;
+            font-weight: bold;
+        }
+    }
+
+    .med-header-row, .print-footer { display: none; }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo">
+            <i class="fas fa-heartbeat"></i>
+            <div>
+                <h2>مدیکال پلاس</h2>
+                <span style="font-size:0.7rem; font-weight:400; opacity:0.7;">سیستم مدیریت بیمارستان</span>
+            </div>
+        </div>
+
+        <ul class="nav-links">
+            <div class="nav-category">گزارش‌گیری و آمار</div>
+            <li class="nav-item active" onclick="showPage('dashboard', this)">
+                <i class="fas fa-chart-pie"></i> داشبورد گزارشات
+            </li>
+
+            <div class="nav-category">مدیریت سیستم</div>
+            <li class="nav-item" onclick="showPage('management', this)">
+                <i class="fas fa-user-injured"></i> مدیریت بیماران
+            </li>
+            <li class="nav-item" onclick="showPage('prescription', this)">
+                <i class="fas fa-file-prescription"></i> مدیریت نسخه‌ها
+            </li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <header class="header">
+            <div class="header-title">
+                <h1 id="page-header">داشبورد</h1>
+                <span id="current-date" style="font-size:0.85rem; color:var(--text-muted); display:flex; align-items:center; gap:5px; margin-top:5px;">
+                    <i class="far fa-calendar-alt"></i> <span id="date-text"></span>
+                </span>
+            </div>
+            
+            <div class="header-meta">
+                <button class="theme-toggle" onclick="toggleTheme()" title="تغییر تم">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="user-profile">
+                    <div class="user-avatar">A</div>
+                    <span>ادمین سیستم</span>
+                </div>
+            </div>
+        </header>
+
+        <div id="dashboard" class="page active">
+            <div class="card" id="chart-card" style="display:none;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h3 style="margin:0; font-size:1.1rem; color:var(--text-main);">📊 نمای گرافیکی گزارش</h3>
+                    <button class="btn" onclick="document.getElementById('chart-card').style.display='none'" style="font-size:0.8rem;">بستن</button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="mainChart"></canvas>
+                </div>
+            </div>
+            <div class="card" style="display:flex; flex-wrap:wrap; gap:20px; align-items:flex-end;">
+                <div style="flex: 2; min-width: 250px;">
+                    <label style="display:block; margin-bottom:8px; font-weight:bold;">انتخاب نوع گزارش:</label>
+                    <select id="report-selector" onchange="setupReportInput()" style="height:48px;">
+                        </select>
+                </div>
+                <div id="report-param-group" style="flex: 1; min-width: 200px; display:none;">
+                    <label id="report-label" style="display:block; margin-bottom:8px; font-weight:bold;">ورودی:</label>
+                    <input type="number" id="report-input" placeholder="..." style="height:48px;">
+                </div>
+                <button class="btn btn-primary" onclick="runReport()" style="height:48px; padding:0 30px;">
+                    <i class="fas fa-search"></i> مشاهده اطلاعات
+                </button>
+            </div>
+
+            <div id="table-wrapper" class="table-container">
+                <div class="empty-state">
+                    <i class="fas fa-folder-open"></i>
+                    <p>جهت مشاهده داده‌ها، لطفاً یک گزارش را انتخاب کنید.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="management" class="page">
+            <div class="card">
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('insert', event)"><i class="fas fa-user-plus"></i> ثبت بیمار</button>
+                    <button class="tab-btn" onclick="switchTab('update', event)"><i class="fas fa-user-edit"></i> ویرایش بیمار</button>
+                    <button class="tab-btn" onclick="switchTab('appt', event)"><i class="fas fa-calendar-check"></i> ثبت نوبت</button>
+                </div>
+
+                <div id="tab-insert" class="form-section">
+                    <div id="notif-insert" class="alert"></div>
+                    <form onsubmit="submitInsert(event)">
+                        <div class="form-grid">
+                            <div class="form-group"><label>کد ملی (ID)</label><input type="number" id="ins_id" required></div>
+                            <div class="form-group"><label>نام</label><input type="text" id="ins_fname" required></div>
+                            <div class="form-group"><label>نام خانوادگی</label><input type="text" id="ins_lname" required></div>
+                            <div class="form-group"><label>تاریخ تولد</label><input type="date" id="ins_dob" required></div>
+                            
+                            <div class="form-group">
+                                <label>جنسیت</label>
+                                <select id="ins_gender" style="height:48px;">
+                                    <option value="Male">مرد</option>
+                                    <option value="Female">زن</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>ایمیل</label>
+                                <input type="email" id="ins_email" placeholder="example@mail.com" required>
+                            </div>
+
+                            <div class="form-group"><label>شماره تماس</label><input type="text" id="ins_phone" required></div>
+                            <div class="form-group">
+                                <label>گروه خونی</label>
+                                <select id="ins_blood" style="height:48px;">
+                                    <option>O+</option><option>A+</option><option>B+</option><option>AB+</option><option>O-</option><option>A-</option><option>B-</option><option>AB-</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-full form-group"><label>تماس اضطراری (نام و شماره)</label><input type="text" id="ins_emergency" required></div>
+                            <div class="col-full form-group"><label>آدرس کامل</label><textarea id="ins_address" rows="2" required></textarea></div>
+                        </div>
+                        <div style="margin-top:20px; text-align:left;">
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> ذخیره اطلاعات</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="tab-update" class="form-section" style="display:none;">
+                    <div style="background:var(--bg-input); padding:20px; border-radius:12px; display:flex; gap:15px; margin-bottom:20px; border:1px solid var(--border-color);">
+                        <input type="number" id="search_id" placeholder="کد ملی بیمار را وارد کنید..." style="background:var(--bg-card);">
+                        <button class="btn btn-primary" onclick="searchPatient()">جستجو</button>
+                    </div>
+                    <div id="notif-update" class="alert"></div>
+                    <form id="edit-form" style="display:none; animation: fadeIn 0.5s;" onsubmit="submitUpdate(event)">
+                        <div class="form-grid">
+                            <div class="form-group"><label>نام کامل (غیرقابل تغییر)</label><input type="text" id="upd_name" disabled style="opacity:0.7;"></div>
+                            <div class="form-group"><label>تلفن جدید</label><input type="text" id="upd_phone"></div>
+                            <div class="form-group"><label>تماس اضطراری جدید</label><input type="text" id="upd_emergency"></div>
+                            <div class="col-full form-group"><label>آدرس جدید</label><textarea id="upd_address" rows="2"></textarea></div>
+                        </div>
+                        <div style="margin-top:20px; text-align:left;">
+                            <button type="submit" class="btn btn-primary" style="background:var(--warning); border:none;"><i class="fas fa-sync"></i> بروزرسانی</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="tab-appt" class="form-section" style="display:none;">
+                    <div id="notif-appt" class="alert"></div>
+                    <form onsubmit="submitAppt(event)">
+                        <div class="form-grid">
+                            <div class="form-group"><label>شناسه بیمار</label><input type="number" id="apt_pid" required></div>
+                            <div class="form-group"><label>شناسه پزشک</label><input type="number" id="apt_did" required></div>
+                            <div class="form-group"><label>تاریخ نوبت</label><input type="date" id="apt_date" required></div>
+                            <div class="col-full form-group"><label>علت مراجعه</label><textarea id="apt_reason" rows="3" required></textarea></div>
+                        </div>
+                        <div style="margin-top:20px; text-align:left;">
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-check-circle"></i> ثبت نوبت</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="prescription" class="page">
+            <div class="card">
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchPrescTab('new', event)"><i class="fas fa-file-medical"></i> نسخه جدید</button>
+                    <button class="tab-btn" onclick="switchPrescTab('edit', event)"><i class="fas fa-edit"></i> ویرایش نسخه</button>
+                </div>
+
+                <div id="presc-new" class="presc-section">
+                    <div id="notif-presc" class="alert"></div>
+                    <div class="form-grid" style="margin-bottom:25px; padding-bottom:25px; border-bottom:1px dashed var(--border-color);">
+                        <div class="form-group"><label>شناسه بیمار</label><input type="number" id="pr_pid" placeholder="Patient ID"></div>
+                        <div class="form-group"><label>شناسه پزشک</label><input type="number" id="pr_did" placeholder="Doctor ID"></div>
+                        <div class="form-group"><label>تاریخ تجویز</label><input type="date" id="pr_date"></div>
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                        <label style="font-weight:bold; font-size:1.1rem;">اقلام دارویی نسخه</label>
+                        <button type="button" class="btn btn-success" onclick="addMedRow()" style="font-size:0.85rem; padding:8px 16px;">
+                            <i class="fas fa-plus"></i> افزودن دارو
+                        </button>
+                    </div>
+                    
+                    <div id="med-list-container" style="display:flex; flex-direction:column; gap:10px;"></div>
+
+                    <div style="text-align:left; margin-top:30px; border-top:1px solid var(--border-color); padding-top:20px;">
+                        <button class="btn btn-primary" onclick="submitPrescription()" style="width:100%; max-width:250px;">
+                            <i class="fas fa-check"></i> ثبت نهایی نسخه
+                        </button>
+                    </div>
+                </div>
+
+                <div id="presc-edit" class="presc-section" style="display:none;">
+                    <div style="background:var(--bg-input); padding:20px; border-radius:12px; display:flex; gap:15px; margin-bottom:20px; border:1px solid var(--border-color);">
+                        <input type="number" id="search_presc_id" placeholder="شماره نسخه (Prescription ID) را وارد کنید..." style="background:var(--bg-card);">
+                        <button class="btn btn-primary" onclick="searchPrescription()">جستجو</button>
+                    </div>
+                    <div id="notif-presc-upd" class="alert"></div>
+                    
+                    <div id="edit-presc-container" style="display:none; animation: fadeIn 0.5s;">
+                        <div class="form-grid" style="margin-bottom:25px;">
+                            <div class="form-group"><label>شناسه بیمار:</label><input type="number" id="upd_pr_pid"></div>
+                            <div class="form-group"><label>شناسه پزشک:</label><input type="number" id="upd_pr_did"></div>
+                            <div class="form-group"><label>تاریخ:</label><input type="date" id="upd_pr_date"></div>
+                        </div>
+                        
+                        <div class="med-table-wrapper" style="background:var(--bg-input); padding:0; border-radius:12px; margin-bottom:20px; background-color: transparent;">
+                            
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding: 15px;" class="hide-in-print">
+                                <label style="font-weight:bold;">لیست داروها:</label>
+                                <button type="button" class="btn btn-success" onclick="addMedRow('upd-med-list-container')" style="font-size:0.8rem; padding:6px 12px;">+ دارو</button>
+                            </div>
+
+                            <div class="med-header-row" style="display:flex; gap:10px;">
+                                <div style="flex:2; text-align:right;">نام دارو</div>
+                                <div style="flex:1; text-align:center;">دوز</div>
+                                <div style="flex:1; text-align:center;">تکرار</div>
+                                <div style="flex:0.5; text-align:center;">مدت</div>
+                                <div style="flex:2; text-align:left;">دستور مصرف</div>
+                            </div>
+
+                            <div id="upd-med-list-container" style="display:flex; flex-direction:column; gap:0;"></div>
+                        </div>
+
+                        <div class="print-footer">
+                            <div class="sign-box"><span>مهر بیمارستان</span></div>
+                            <div class="sign-box"><span>مهر و امضای پزشک</span></div>
+                        </div>
+
+                        <div style="text-align:left; display:flex; gap:10px; justify-content:flex-end; padding: 15px;" class="hide-in-print">
+                            <button type="button" class="btn btn-primary" style="background:#4b5563; border:none;" onclick="window.print()">
+                                <i class="fas fa-print"></i> چاپ نسخه
+                            </button>
+                            <button class="btn btn-primary" style="background:var(--warning); border:none;" onclick="submitPrescriptionUpdate()">
+                                <i class="fas fa-sync"></i> بروزرسانی نسخه
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        document.getElementById('date-text').innerText = new Date().toLocaleDateString('fa-IR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+        function toggleTheme() {
+            const body = document.body;
+            body.classList.toggle('dark-mode');
+            const isDark = body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            
+            const icon = document.querySelector('.theme-toggle i');
+            icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            document.querySelector('.theme-toggle i').className = 'fas fa-sun';
+        }
+
+        function showPage(id, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+            
+            const titles = {
+                'dashboard': 'داشبورد گزارشات',
+                'management': 'مدیریت بیماران',
+                'prescription': 'مدیریت نسخه‌ها'
+            };
+            document.getElementById('page-header').innerText = titles[id];
+        }
+
+        function switchTab(name, e) {
+            e.preventDefault();
+            document.querySelectorAll('#management .form-section').forEach(s => s.style.display='none');
+            const target = document.getElementById('tab-'+name);
+            target.style.display='block';
+            target.style.animation = 'fadeIn 0.4s';
+            
+            document.querySelectorAll('#management .tab-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+        }
+
+        function switchPrescTab(name, e) {
+            e.preventDefault();
+            document.querySelectorAll('.presc-section').forEach(s => s.style.display='none');
+            const target = document.getElementById('presc-'+name);
+            target.style.display='block';
+            target.style.animation = 'fadeIn 0.4s';
+
+            document.querySelectorAll('#prescription .tab-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            
+            if(name === 'new' && document.getElementById('med-list-container').children.length === 0) addMedRow();
+        }
+
+        function showAlert(id, msg, success) {
+            const el = document.getElementById(id);
+            el.className = 'alert ' + (success ? 'alert-success' : 'alert-error');
+            el.innerHTML = (success ? '<i class="fas fa-check-circle"></i> ' : '<i class="fas fa-exclamation-circle"></i> ') + msg;
+            el.style.display = 'block';
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => {
+                el.style.opacity = '0';
+                setTimeout(() => { el.style.display='none'; el.style.opacity='1'; }, 500);
+            }, 5000);
+        }
+
+
+        let dbMeds = [];
+
+        async function loadMedications() {
+            try {
+                const res = await fetch('http://localhost:3000/api/medications');
+                if(res.ok) {
+                    dbMeds = await res.json();
+                } else {
+                    console.error('Failed to load medications');
+                }
+            } catch(e) { console.error('Error loading meds:', e); }
+        }
+        loadMedications();
+
+        function createMedRowHTML(selectedId = null) {
+            if(dbMeds.length === 0) return '<div style="color:var(--danger); padding:10px;">در حال دریافت لیست داروها... <i class="fas fa-spinner fa-spin"></i></div>';
+            
+            let opts = dbMeds.map(m => 
+                `<option value="${m.medication_id}" ${m.medication_id == selectedId ? 'selected' : ''}>${m.medication_name}</option>`
+            ).join('');
+            
+            return `
+                <div class="med-row">
+                    <div style="flex:2; min-width:200px;">
+                        <select class="m-id" style="width:100%;">${opts}</select>
+                    </div>
+                    <input class="m-dose" placeholder="دوز (10mg)" style="flex:1; min-width:100px;">
+                    <input class="m-freq" placeholder="تکرار (Daily)" style="flex:1; min-width:100px;">
+                    <input class="m-days" type="number" placeholder="روز" style="flex:0.5; min-width:60px;">
+                    <input class="m-inst" placeholder="دستور مصرف" style="flex:2; min-width:150px;">
+                    <button class="btn btn-danger" onclick="this.parentElement.remove()" style="padding:10px; width:40px; height:40px; border-radius:10px;">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+        }
+
+        function addMedRow(containerId = 'med-list-container') {
+            const container = document.getElementById(containerId);
+            if(container.innerHTML.includes('در حال دریافت')) container.innerHTML = '';
+            container.insertAdjacentHTML('beforeend', createMedRowHTML());
+        }
+
+        function getMedData(containerId) {
+            const rows = document.querySelectorAll(`#${containerId} .med-row`);
+            return Array.from(rows).map(r => {
+                const idEl = r.querySelector('.m-id');
+                if(!idEl) return null;
+                return {
+                    med_id: idEl.value,
+                    dose: r.querySelector('.m-dose').value,
+                    freq: r.querySelector('.m-freq').value,
+                    days: r.querySelector('.m-days').value || 30,
+                    inst: r.querySelector('.m-inst').value
+                };
+            }).filter(item => item !== null && item.med_id);
+        }
+
+        async function submitPrescription() {
+            const data = {
+                patientId: document.getElementById('pr_pid').value,
+                doctorId: document.getElementById('pr_did').value,
+                date: document.getElementById('pr_date').value,
+                medications: getMedData('med-list-container')
+            };
+            
+            if(!data.patientId || !data.doctorId || data.medications.length === 0) {
+                showAlert('notif-presc', 'لطفاً تمامی فیلدها را پر کرده و حداقل یک دارو اضافه کنید.', false); return;
+            }
+
+            try {
+                const res = await fetch('http://localhost:3000/api/add-prescription', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)
+                });
+                const result = await res.json();
+                if(result.status === 'Success') {
+                    showAlert('notif-presc', `نسخه جدید با موفقیت ثبت شد (ID: ${result.message})`, true);
+                    document.getElementById('med-list-container').innerHTML = '';
+                    addMedRow();
+                } else showAlert('notif-presc', 'خطا: ' + result.message, false);
+            } catch(e) { showAlert('notif-presc', 'خطای سرور: ' + e.message, false); }
+        }
+
+        async function searchPrescription() {
+            const id = document.getElementById('search_presc_id').value;
+            if(!id) return;
+
+            try {
+                const res = await fetch(`http://localhost:3000/api/prescription/${id}`);
+                
+                if (res.status === 404) {
+                    showAlert('notif-presc-upd', 'نسخه‌ای با این شناسه یافت نشد.', false);
+                    document.getElementById('edit-presc-container').style.display = 'none';
+                    return;
+                }
+
+                const data = await res.json();
+                
+                if(data.header) {
+                    document.getElementById('edit-presc-container').style.display = 'block';
+                    document.getElementById('notif-presc-upd').style.display = 'none';
+                    
+                    document.getElementById('upd_pr_pid').value = data.header.patient_id;
+                    document.getElementById('upd_pr_did').value = data.header.doctor_id;
+                    const dateStr = data.header.prescribed_date;
+                    document.getElementById('upd_pr_date').value = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
+                    
+                    const container = document.getElementById('upd-med-list-container');
+                    container.innerHTML = '';
+                    
+                    if (data.items && data.items.length > 0) {
+                        data.items.forEach(item => {
+                            container.insertAdjacentHTML('beforeend', createMedRowHTML(item.medication_id));
+                            const lastRow = container.lastElementChild;
+                            if(lastRow.querySelector('.m-dose')) {
+                                lastRow.querySelector('.m-dose').value = item.dosage;
+                                lastRow.querySelector('.m-freq').value = item.frequency;
+                                lastRow.querySelector('.m-days').value = item.duration_days;
+                                lastRow.querySelector('.m-inst').value = item.instructions;
+                            }
+                        });
+                    } else {
+                        container.insertAdjacentHTML('beforeend', createMedRowHTML());
+                    }
+                }
+            } catch(e) { showAlert('notif-presc-upd', 'خطا در ارتباط با سرور', false); }
+        }
+
+        async function submitPrescriptionUpdate() {
+            const data = {
+                id: document.getElementById('search_presc_id').value,
+                patientId: document.getElementById('upd_pr_pid').value,
+                doctorId: document.getElementById('upd_pr_did').value,
+                date: document.getElementById('upd_pr_date').value,
+                medications: getMedData('upd-med-list-container')
+            };
+            try {
+                const res = await fetch('http://localhost:3000/api/update-prescription', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)
+                });
+                const result = await res.json();
+                if(result.status === 'Success') showAlert('notif-presc-upd', 'نسخه با موفقیت بروزرسانی شد.', true);
+                else showAlert('notif-presc-upd', result.message, false);
+            } catch(e) { showAlert('notif-presc-upd', 'خطای سرور', false); }
+        }
+
+        
+        const reportsConfig = [
+            { id: 0, title: "-- لطفاً نوع گزارش را انتخاب کنید --", type: "none" },
+            { id: 1, title: "1. سوابق پزشکی کامل بیمار", type: "param", paramLabel: "شناسه بیمار", columns: [{key:'full_name',label:'نام'},{key:'disease_name',label:'بیماری'},{key:'medication_name',label:'دارو'}] },
+            { id: 2, title: "2. لیست بیماران تحت نظر پزشک", type: "param", paramLabel: "شناسه پزشک", columns: [{key:'patient_name',label:'نام'},{key:'last_diagnosis',label:'تشخیص'}] },
+            { id: 3, title: "3. نتایج آزمایش‌های غیرطبیعی", type: "no-param", columns: [{key:'patient_name',label:'بیمار'},{key:'test_name',label:'تست'},{key:'result_value',label:'نتیجه'}] },
+            { id: 4, title: "4. داروهای فعال بیمار", type: "param", paramLabel: "شناسه بیمار", columns: [{key:'medication_name',label:'دارو'},{key:'days_remaining',label:'مانده (روز)'}] },
+            { id: 5, title: "5. پیشرفت طرح درمان", type: "param", paramLabel: "شناسه طرح", columns: [{key:'progress_percent',label:'پیشرفت'}] },
+            { id: 6, title: "6. آمار بیماری‌های شایع", type: "no-param", columns: [{key:'disease_name',label:'بیماری'},{key:'total_diagnoses',label:'تعداد'}] },
+            { id: 7, title: "7. بیماران بر اساس بیماری خاص", type: "param", paramLabel: "شناسه بیماری", columns: [{key:'patient_name',label:'بیمار'}] },
+            { id: 8, title: "8. گزارش عملکرد پزشکان", type: "no-param", columns: [{key:'doctor_name',label:'پزشک'},{key:'total_appointments',label:'ویزیت‌ها'}] },
+            { id: 9, title: "9. نسخه‌های در حال انقضا", type: "no-param", columns: [{key:'medication_name',label:'دارو'},{key:'days_until_expiry',label:'روز مانده'}] },
+            { id: 10, title: "10. دقت تشخیص پزشکان", type: "optional-param", paramLabel: "شناسه پزشک", columns: [{key:'doctor_name',label:'پزشک'},{key:'confirmation_rate',label:'دقت'}] },
+            { id: 11, title: "11. عملکرد آزمایشگاه", type: "no-param", columns: [{key:'test_name',label:'تست'},{key:'total_performed',label:'تعداد'}] },
+            { id: 12, title: "12. لیست طرح‌های فعال", type: "no-param", columns: [{key:'treatment_type',label:'درمان'}] },
+            { id: 13, title: "13. عملکرد متخصصین (تفسیر)", type: "no-param", columns: [{key:'specialist_name',label:'نام'},{key:'tests_interpreted',label:'تعداد تفسیر'}] },
+            { id: 14, title: "14. هشدار موارد حاد (Severe)", type: "no-param", columns: [{key:'patient_name',label:'بیمار'},{key:'severity',label:'شدت'}] }
+        ];
+
+        const sel = document.getElementById('report-selector');
+        reportsConfig.forEach((r,i) => { let o = document.createElement('option'); o.value=i; o.innerText=r.title; sel.appendChild(o); });
+
+        function setupReportInput() {
+            const r = reportsConfig[sel.value];
+            document.getElementById('report-param-group').style.display = (r.type !== 'no-param' && r.type !== 'none') ? 'block' : 'none';
+            if(r.type !== 'none') document.getElementById('report-label').innerText = r.paramLabel + ':';
+        }
+
+        async function runReport() {
+            const r = reportsConfig[sel.value];
+            if(!r || r.type==='none') return;
+
+            let url = `http://localhost:3000/api/report/${r.id}`;
+            if(r.type!=='no-param') url += `?param=${document.getElementById('report-input').value}`;
+            
+            const wrapper = document.getElementById('table-wrapper');
+            wrapper.innerHTML = '<div style="text-align:center; padding:30px; color:var(--text-muted);"><i class="fas fa-circle-notch fa-spin fa-2x"></i><br><br>در حال دریافت اطلاعات...</div>';
+
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                
+                renderChart(r.id, data); 
+
+                if(!data.length) { 
+                    wrapper.innerHTML = '<div class="empty-state"><i class="far fa-folder-open"></i><p>هیچ رکوردی یافت نشد.</p></div>'; 
+                    return; 
+                }
+
+                let html = '<table><thead><tr>';
+                r.columns.forEach(c => html+=`<th>${c.label}</th>`);
+                html+='</tr></thead><tbody>';
+                data.forEach(row => {
+                    html+='<tr>';
+                    r.columns.forEach(c => {
+                        let val = row[c.key];
+                        let displayVal = val || '-';
+                        if(['Severe','Critical','Abnormal'].includes(val)) displayVal = `<span class="badge bg-red">${val}</span>`;
+                        else if(['Active','Confirmed','Normal'].includes(val)) displayVal = `<span class="badge bg-green">${val}</span>`;
+                        else if(['Completed'].includes(val)) displayVal = `<span class="badge bg-blue">${val}</span>`;
+                        
+                        html+=`<td>${displayVal}</td>`;
+                    });
+                    html+='</tr>';
+                });
+                wrapper.innerHTML = html+'</tbody></table>';
+            } catch(e) { 
+                console.error(e);
+                wrapper.innerHTML = '<div style="color:var(--danger); text-align:center; padding:20px;">خطا در ارتباط با سرور</div>'; 
+            }
+        }
+
+        async function postData(endpoint, data, notifId) {
+            try {
+                const res = await fetch(`http://localhost:3000/api/${endpoint}`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+                const result = await res.json();
+                showAlert(notifId, result.status === 'Success' ? 'عملیات با موفقیت انجام شد' : 'خطا: ' + result.message, result.status === 'Success');
+            } catch(e) { showAlert(notifId, 'خطای سرور', false); }
+        }
+
+        async function submitInsert(e) { 
+            e.preventDefault(); 
+            
+            postData('add-patient', {
+                id: document.getElementById('ins_id').value, 
+                firstName: document.getElementById('ins_fname').value, 
+                lastName: document.getElementById('ins_lname').value, 
+                dob: document.getElementById('ins_dob').value, 
+                gender: document.getElementById('ins_gender').value, 
+                email: document.getElementById('ins_email').value, // <--- این خط اضافه شد
+                phone: document.getElementById('ins_phone').value, 
+                address: document.getElementById('ins_address').value, 
+                emergency: document.getElementById('ins_emergency').value, 
+                blood: document.getElementById('ins_blood').value
+            }, 'notif-insert'); 
+        }
+        async function submitUpdate(e) { e.preventDefault(); postData('update-patient', {id: document.getElementById('search_id').value, phone: document.getElementById('upd_phone').value, address: document.getElementById('upd_address').value, emergency: document.getElementById('upd_emergency').value}, 'notif-update'); }
+        async function submitAppt(e) { e.preventDefault(); postData('add-appointment', {patientId: document.getElementById('apt_pid').value, doctorId: document.getElementById('apt_did').value, date: document.getElementById('apt_date').value, reason: document.getElementById('apt_reason').value}, 'notif-appt'); }
+        
+        async function searchPatient() {
+            const id = document.getElementById('search_id').value;
+            if(!id) return;
+            try {
+                const res = await fetch(`http://localhost:3000/api/patient/${id}`);
+                const data = await res.json();
+                if(data) { 
+                    const form = document.getElementById('edit-form');
+                    form.style.display='block'; 
+                    document.getElementById('upd_name').value = data.first_name + ' ' + data.last_name; 
+                    document.getElementById('upd_phone').value = data.phone; 
+                    document.getElementById('upd_address').value = data.address; 
+                    document.getElementById('upd_emergency').value = data.emergency_contact; 
+                } else showAlert('notif-update', 'بیماری با این مشخصات یافت نشد', false);
+            } catch(e) { showAlert('notif-update', 'خطا در جستجو', false); }
+        }
+
+        let myChart = null; 
+        function renderChart(reportId, data) {
+    const ctx = document.getElementById('mainChart').getContext('2d');
+    const chartCard = document.getElementById('chart-card');
+    
+    if (myChart) {
+        myChart.destroy();
+        myChart = null;
+    }
+
+    let config = null;
+
+        if (reportId == 6) {
+            config = {
+                type: 'bar',
+                data: {
+                    labels: data.map(d => d.disease_name),
+                    datasets: [{
+                        label: 'تعداد تشخیص',
+                        data: data.map(d => d.total_diagnoses),
+                        backgroundColor: 'rgba(79, 70, 229, 0.6)',
+                        borderColor: 'rgba(79, 70, 229, 1)',
+                        borderWidth: 1
+                    }]
+                }
+            };
+        }
+        else if (reportId == 8) {
+            config = {
+                type: 'doughnut',
+                data: {
+                    labels: data.map(d => d.doctor_name),
+                    datasets: [{
+                        label: 'تعداد ویزیت',
+                        data: data.map(d => d.total_appointments),
+                        backgroundColor: ['#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'],
+                    }]
+                }
+            };
+        }
+        else if (reportId == 11) {
+            config = {
+                type: 'polarArea',
+                data: {
+                    labels: data.map(d => d.test_name),
+                    datasets: [{
+                        label: 'تعداد انجام شده',
+                        data: data.map(d => d.total_performed),
+                        backgroundColor: ['rgba(255, 99, 132, 0.5)', 'rgba(54, 162, 235, 0.5)', 'rgba(255, 206, 86, 0.5)', 'rgba(75, 192, 192, 0.5)'],
+                    }]
+                }
+            };
+        }
+        else if (reportId == 10) {
+            config = {
+                type: 'bar',
+                options: { indexAxis: 'y' }, 
+                data: {
+                    labels: data.map(d => d.doctor_name),
+                    datasets: [{
+                        label: 'نرخ دقت (%)',
+                        data: data.map(d => d.confirmation_rate),
+                        backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                    }]
+                }
+            };
+        }
+
+        if (config) {
+            chartCard.style.display = 'block';
+            config.options = { 
+                ...config.options, 
+                responsive: true, 
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { font: { family: 'Vazirmatn' } } },
+                    tooltip: { titleFont: { family: 'Vazirmatn' }, bodyFont: { family: 'Vazirmatn' } }
+                }
+            };
+            myChart = new Chart(ctx, config);
+        } else {
+            chartCard.style.display = 'none'; 
+        }
+    }
+    </script>
+</body>
+</html>

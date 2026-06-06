@@ -1,0 +1,10 @@
+﻿1,15234567,1,2025-01-10,NULL,No lesions,Lesions in hippocampal region,Abnormal,http://hospital.com/mri_001.jpg,4
+2,20567890,2,2025-01-12,NULL,No injury,No injury observed,Normal,http://hospital.com/ct_001.jpg,10
+3,18234123,3,2025-01-08,NULL,Normal activity,Beta rhythm predominant,Normal,http://hospital.com/eeg_001.jpg,1
+4,22891234,4,2025-01-05,WBC: 7.2,Within normal range,White blood cell count normal,Normal,NULL,8
+5,16756234,5,2024-12-20,28,=24 points,Memory relatively preserved,Normal,NULL,7
+6,23421567,6,2025-01-02,85%,>80%,Attention relatively good,Normal,NULL,7
+7,14123890,7,2024-11-15,NULL,No infection,Minimal cell count,Normal,NULL,8
+8,15678912,8,2024-10-30,32,<45 mg/dL,Limited protein levels,Normal,NULL,8
+9,24567890,9,2025-01-02,NULL,Normal metabolism,Decreased metabolism in frontal region,Abnormal,http://hospital.com/pet_001.jpg,4
+10,24567890,10,2025-01-20,122/80,120/80 mmHg,Blood pressure controlled,Normal,NULL,1

@@ -1,0 +1,17 @@
+name
+Appointment
+Diagnosis
+Disease
+Doctor
+Examination_Records
+Medical_Test
+Medication
+MSreplication_options
+Patient
+Prescription
+spt_fallback_db
+spt_fallback_dev
+spt_fallback_usg
+spt_monitor
+Test_Catalog
+Treatment_Plan

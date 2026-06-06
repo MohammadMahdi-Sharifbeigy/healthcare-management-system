@@ -1,0 +1,10 @@
+﻿1,Brain MRI,Imaging,Magnetic resonance imaging of the brain,No lesions
+2,CT Scan,Imaging,Computed tomography scan of the head,No injury
+3,EEG,Laboratory,Electroencephalography for brain electrical activity,Normal activity
+4,Complete Blood Count,Laboratory,Assessment and counting of blood components,Within normal range
+5,MMSE Memory Test,Cognitive Test,Mini-Mental State Examination for memory and concentration,=24 points
+6,Attention Test,Cognitive Test,Assessment of concentration ability,>80%
+7,Cerebrospinal Fluid Test,Laboratory,Analysis of central nervous system fluid,No infection
+8,CSF Protein Test,Laboratory,Measurement of protein in cerebrospinal fluid,<45 mg/dL
+9,PET Scan,Imaging,Positron emission tomography for metabolic imaging,Normal metabolism
+10,Blood Pressure Measurement,Laboratory,Measurement of arterial blood pressure,120/80 mmHg
